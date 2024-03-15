@@ -1,0 +1,35 @@
+# Install Azure PowerShell module if not already installed
+Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
+
+# Import the Az module
+Import-Module Az
+
+# Define your Azure credentials (replace placeholders with your actual credentials)
+$clientId       = "<your-client-id>"
+$clientSecret   = "<your-client-secret>"
+$tenantId       = "<your-tenant-id>"
+$subscriptionId = "<your-subscription-id>"
+
+# Authenticate with Azure using a service principal
+$azureCredentials = Get-Credential -UserName $clientId -Password $clientSecret -Message "Enter Azure Service Principal credentials"
+
+Connect-AzAccount -ServicePrincipal -Credential $azureCredentials -TenantId $tenantId -Subscription $subscriptionId
+
+# Define your bastion tunnel parameters
+$resourceGroupName = "<your-resource-group-name>"
+$bastionName       = "<your-bastion-name>"
+$vmName            = "<your-vm-name>"
+$vnetName          = "<your-vnet-name>"
+$subnetName        = "<your-subnet-name>"
+$bastionIp         = "<your-bastion-ip>"
+
+# Create the bastion tunnel
+az network bastion create --name $bastionName `
+                           --resource-group $resourceGroupName `
+                           --public-ip-address $bastionIp `
+                           --vnet-name $vnetName `
+                           --subnet $subnetName `
+                           --vm-name $vmName `
+                           --output none
+
+Write-Host "Bastion tunnel created successfully."
